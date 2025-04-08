@@ -1,74 +1,111 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './Llamador.css';
 
 export default function Llamador() {
   const [turnoActual, setTurnoActual] = useState(null);
   const [ultimoTurnoHablado, setUltimoTurnoHablado] = useState(null);
-  const [error, setError] = useState('');
+  const [historial, setHistorial] = useState([]);
 
   useEffect(() => {
     obtenerTurnoLlamado();
-    const interval = setInterval(obtenerTurnoLlamado, 5000); // Consulta el turno cada 5 segundos
+    const interval = setInterval(obtenerTurnoLlamado, 5000);
     return () => clearInterval(interval);
-  }, [ultimoTurnoHablado]); // Dependencia de último turno hablado
+  }, [ultimoTurnoHablado]);
 
   const obtenerTurnoLlamado = async () => {
     try {
       const response = await fetch('http://localhost:5000/turno-actual');
-      if (!response.ok) throw new Error('No se pudo obtener el turno actual');
       const data = await response.json();
 
-      if (!data || data.length === 0) {
-        setError('No hay turnos llamados en este momento');
-        setTurnoActual(null);
+      if (
+        data &&
+        data.turno &&
+        data.turno !== ultimoTurnoHablado &&
+        !speechSynthesis.speaking
+      ) {
+        // Guardamos el turno anterior antes de actualizar
+        if (turnoActual) {
+          setHistorial((prev) => {
+            const actualizado = [turnoActual, ...prev];
+            return actualizado.slice(0, 2); // mantener solo 2 pasados
+          });
+        }
+
+        setTurnoActual(data);
+        hablarTurno(data.turno, data.especialidad);
       } else {
         setTurnoActual(data);
-        setError('');
-
-        // Solo habla si el turno es nuevo y no está siendo hablado
-        if (data.turno !== ultimoTurnoHablado && !speechSynthesis.speaking) {
-          hablarTurno(data.turno, data.especialidad);
-        }
       }
     } catch (error) {
       console.error('Error al obtener el turno actual:', error);
-      setError('Error al conectar con el servidor');
-      setTurnoActual(null);
     }
   };
 
-  // 🔊 Función para hacer que el llamador hable (solo una vez por turno)
-  const hablarTurno = (turno) => {
-    if ('speechSynthesis' in window) {
-      const mensaje = new SpeechSynthesisUtterance(` ${turno}, dirijase al box 1.`);
-      mensaje.lang = 'es-ES'; // Configurar idioma español
-      mensaje.rate = 1; // Velocidad normal
-      mensaje.pitch = 1; // Tono normal
-
-      mensaje.onend = () => {
-        setUltimoTurnoHablado(turno); // Guardar el turno anunciado
-      };
-
+  const hablarTurno = (turno, especialidad) => {
+    const audio = new Audio('/ding.mp3');
+    audio.play().then(() => {
+      const mensaje = new SpeechSynthesisUtterance(`Turno ${turno}, diríjase al box`);
+      mensaje.lang = 'es-ES';
+      mensaje.rate = 1;
+      mensaje.pitch = 1;
+      mensaje.onend = () => setUltimoTurnoHablado(turno);
       speechSynthesis.speak(mensaje);
-    } else {
-      console.warn('Tu navegador no soporta síntesis de voz.');
-    }
+    }).catch((err) => {
+      console.error('Error al reproducir el sonido:', err);
+    });
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-white">
-      <div className="card text-center shadow-lg p-4 bg-primary text-white" style={{ maxWidth: '600px', width: '100%' }}>
-        <h1 className="card-title">Turno en Llamado</h1>
-        {turnoActual ? (
-          <>
-            <h2 className="display-1 fw-bold">{turnoActual.turno}</h2>   
-          </>
-        ) : (
-          <p className="mt-3">No hay turnos en espera</p>
-        )}
+    <div className="llamador-container">
+      {/* ENCABEZADO */}
+      <div className="encabezado bg-primary text-white d-flex justify-content-between align-items-center px-4 py-2">
+        <h1 className="mb-0">SISTEMA DE LLAMADOS</h1>
+        <div className="text-end">
+          <h4 className="mb-0">LOGO EMPRESA</h4>
+        </div>
       </div>
 
-      {error && <div className="alert alert-danger mt-3">{error}</div>}
+      {/* CONTENIDO */}
+      <div className="contenido d-flex">
+        {/* COLUMNA IZQUIERDA */}
+        <div className="columna-turnos d-flex flex-column flex-fill p-3">
+
+          {/* TURNO ACTUAL */}
+          <div className="celda-turno mb-4 flex-fill border rounded d-flex flex-column justify-content-center align-items-center turno-actual bg-light">
+            {turnoActual ? (
+              <>
+                <h2 className="fw-bold display-4">Turno {turnoActual.turno}</h2>
+                <h5 className="text-secondary">{turnoActual.especialidad}</h5>
+              </>
+            ) : (
+              <span className="text-muted">Esperando turno...</span>
+            )}
+          </div>
+
+          {/* TURNOS ANTERIORES */}
+          <div className="historial-turnos">
+            {historial.map((turno, idx) => (
+              <div
+                key={idx}
+                className="celda-turno mb-3 border rounded d-flex flex-column justify-content-center align-items-center bg-white"
+              >
+                <h4 className="fw-bold">Turno {turno.turno}</h4>
+                <small className="text-muted">{turno.especialidad}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* COLUMNA DERECHA */}
+        <div className="columna-imagen flex-fill">
+          <img
+            src="/institucional.jpg"
+            alt="Institucional"
+            className="img-fluid h-100 w-100 object-fit-cover"
+          />
+        </div>
+      </div>
     </div>
   );
 }
