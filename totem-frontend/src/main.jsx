@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { TurnoProvider } from './components/TurnoContext'; // Asegúrate de importar correctamente
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // esto es clave
+
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

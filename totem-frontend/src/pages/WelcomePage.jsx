@@ -8,6 +8,12 @@ export default function WelcomePage() {
   const dropdownRef = useRef(null);
 
   const goToSection = (section) => {
+    if (section === 'doctor/secretaria') {
+      const usuario = localStorage.getItem('usuario');
+      const box = localStorage.getItem('box');
+    
+    }
+
     navigate(`/${section}`);
     setIsDoctorMenuOpen(false); // Cierra el menú al hacer clic
   };
@@ -33,9 +39,9 @@ export default function WelcomePage() {
     <div className="welcome-page">
       <nav className="navbar-custom">
         <div className="nav-left">
-          <button onClick={() => goToSection('totem')}>Nuestro servicio</button>
-          <button onClick={() => goToSection('llamador')}>Nosotros</button>
-          <button onClick={() => goToSection('secretaria')}>Secretaría</button>
+          <button onClick={() => goToSection('doctor/totem')}>Nuestro servicio</button>
+          <button onClick={() => goToSection('doctor/llamador')}>Nosotros</button>
+          <button onClick={() => goToSection('doctor/secretaria')}>Secretaría</button>
         </div>
 
         <div className="navbar-center">

@@ -2,10 +2,34 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaPhoneAlt } from 'react-icons/fa';
 import './Secretaria.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function Secretaria() {
   const [turnos, setTurnos] = useState([]);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  // Obtenemos el usuario y el box desde localStorage
+  const usuario = localStorage.getItem('usuario');
+  const box = localStorage.getItem('box');
+
+  // Redireccionar si falta perfil
+  useEffect(() => {
+    if (!usuario || !box) {
+      navigate('/perfil');
+    }
+  }, [navigate]);
+
+  // Evitar renderizado si no hay perfil
+  if (!usuario || !box) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Redirigiendo...</span>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     obtenerTurnos();
@@ -38,32 +62,50 @@ export default function Secretaria() {
     }
   };
 
+  const cerrarSesion = () => {
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('box');
+    navigate('/perfil'); // Redirige al selector de perfil en vez de al inicio
+  };
+
   return (
     <div className="secretaria-container">
-      <div className="header-bar">
+      <div className="header-bar d-flex justify-content-between align-items-center">
         <div className="header-left">
-          <h5 className="sede-title">CC URQ 232</h5>
+          <div className="fw-bold text-primary">CC URQ 232</div>
           <div className="text-muted small">Puestos</div>
-          <select className="form-select">
-            <option>BOX 01 - (URQUIZA 232)</option>
+          <select className="form-select form-select-sm w-auto">
+            <option>{box}</option>
           </select>
         </div>
 
         <div className="header-center">
           <div className="text-muted small">Ver solo turnos:</div>
-          <select className="form-select">
+          <select className="form-select form-select-sm w-auto">
             <option>(AD) Estética, (BF) Otras Especialidades</option>
           </select>
         </div>
 
-        <div className="header-right">
-          <div className="user-info dropdown">
-            <span className="user-name">Cangioli Mateo ▾</span>
+        <div className="header-right d-flex align-items-center gap-3">
+          <div className="dropdown">
+            <button
+              className="btn btn-light dropdown-toggle user-name"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {usuario}
+            </button>
+            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><button className="dropdown-item">Perfil</button></li>
+              <li><hr className="dropdown-divider" /></li>
+              <li><button className="dropdown-item text-danger" onClick={cerrarSesion}>Cerrar sesión</button></li>
+            </ul>
           </div>
-          <div className="badges">
-            <span className="badge badge-turnos">{turnos.length} turnos pendientes</span>
-            <span className="badge badge-derivaciones">0 derivaciones pendientes</span>
-          </div>
+
+          <span className="badge bg-warning text-dark">{turnos.length} turnos pendientes</span>
+          <span className="badge bg-primary">0 derivaciones pendientes</span>
         </div>
       </div>
 
