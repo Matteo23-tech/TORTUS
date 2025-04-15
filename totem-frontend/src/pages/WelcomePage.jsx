@@ -39,13 +39,13 @@ export default function WelcomePage() {
     <div className="welcome-page">
       <nav className="navbar-custom">
         <div className="nav-left">
-          <button onClick={() => goToSection('doctor/totem')}>Nuestro servicio</button>
-          <button onClick={() => goToSection('doctor/llamador')}>Nosotros</button>
-          <button onClick={() => goToSection('doctor/secretaria')}>Secretaría</button>
+          <button onClick={() => goToSection('admin')}>Empresa</button>
+          <button onClick={() => goToSection('doctor')}>Nosotros</button>
+          <button onClick={() => goToSection('doctor')}>Secretaría</button>
         </div>
 
         <div className="navbar-center">
-          <span className="brand-name">.TORTUS.</span>
+          <span className="brand-name">TORTUS</span>
         </div>
 
         <div className="nav-right">
@@ -61,7 +61,8 @@ export default function WelcomePage() {
               <div className="dropdown-menu show">
                 <button onClick={() => goToSection('doctor/totem')}>Totem</button>
                 <button onClick={() => goToSection('doctor/llamador')}>Llamador</button>
-                <button onClick={() => goToSection('doctor/secretaria')}>Secretaria</button>
+                <button onClick={() => goToSection('doctor/secretaria')}>Secretaría</button>
+                <button onClick={() => goToSection('doctor/llamadorpacientes')}>Llamador de Pacientes</button> {/* Nuevo botón */}
               </div>
             )}
           </div>
@@ -69,7 +70,7 @@ export default function WelcomePage() {
       </nav>
 
       <div className="welcome-content">
-        <img src="/logo.png" alt="Logo Horus" className="logo" />
+        <img src="/logo.png" alt="Logo TORTUS" className="logo" />
         <h1 className="main-title">El Software que va a hacer crecer tu empresa</h1>
         <h2 className="subtitle">.TORTUS.</h2>
         <p className="tagline">SOFTWARE DE ATENCIÓN</p>

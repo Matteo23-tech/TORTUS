@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { TurnoProvider } from './components/TurnoContext';
-
 import WelcomePage from './pages/WelcomePage';
 import Totem from './pages/Totem';
 import Llamador from './pages/Llamador';
 import Secretaria from './pages/Secretaria';
 import Doctor from './pages/Doctor';
 import PerfilSelector from './pages/PerfilSelector';
+import LlamadorPacientes from './pages/LlamadorPacientes';
 
 function App() {
   return (
@@ -17,6 +17,7 @@ function App() {
           <Route path="/doctor/totem" element={<Totem />} />
           <Route path="/doctor/llamador" element={<Llamador />} />
           <Route path="/doctor/secretaria" element={<Secretaria />} />
+          <Route path="/doctor/llamadorPacientes" element={<LlamadorPacientes />} />
           <Route path="/doctor" element={<Doctor />} />
           <Route path="/perfil" element={<PerfilSelector />} />
         </Routes>

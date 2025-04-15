@@ -6,13 +6,16 @@ const app = express();
 const PORT = 5000;
 
 // Middleware
-app.use(cors());
-app.use(express.json());
 app.use(cors({ origin: '*' }));
+app.use(express.json());
+
 // Conectar a la base de datos SQLite
 const db = new sqlite3.Database('./turnos.db', (err) => {
-  if (err) console.error('❌ Error al conectar con la BD:', err.message);
-  else console.log('✅ Conectado a SQLite.');
+  if (err) {
+    console.error('❌ Error al conectar con la BD:', err.message);
+  } else {
+    console.log('✅ Conectado a SQLite.');
+  }
 });
 
 // Crear la tabla si no existe
@@ -33,14 +36,21 @@ app.get('/turnos', (req, res) => {
   });
 });
 
-// Agregar un nuevo turno
+// Agregar un nuevo turno (nuevo formato)
 app.post('/turnos', (req, res) => {
-  const { turno, especialidad } = req.body;
-  if (!turno || !especialidad) return res.status(400).json({ error: 'Faltan datos' });
+  const { especialidad } = req.body;
+  if (!especialidad) return res.status(400).json({ error: 'Especialidad requerida' });
 
-  db.run("INSERT INTO turnos (turno, especialidad) VALUES (?, ?)", [turno, especialidad], function (err) {
-    if (err) return res.status(500).json({ error: 'Error al agregar el turno' });
-    res.json({ message: '✅ Turno agregado', id: this.lastID });
+  db.get("SELECT COUNT(*) AS cantidad FROM turnos WHERE especialidad = ?", [especialidad], (err, row) => {
+    if (err) return res.status(500).json({ error: 'Error al contar turnos' });
+
+    const numero = row.cantidad + 1;
+    const turno = `${especialidad}${numero}`;
+
+    db.run("INSERT INTO turnos (turno, especialidad) VALUES (?, ?)", [turno, especialidad], function (err) {
+      if (err) return res.status(500).json({ error: 'Error al agregar el turno' });
+      res.json({ message: '✅ Turno agregado', turno });
+    });
   });
 });
 
@@ -77,6 +87,18 @@ app.delete('/turnos/:id', (req, res) => {
     res.json({ message: '✅ Turno eliminado' });
   });
 });
+
+// Endpoint opcional: resetear todos los turnos (para pruebas o reinicios)
+app.delete('/reset-turnos', (req, res) => {
+  db.run("DELETE FROM turnos", (err) => {
+    if (err) return res.status(500).json({ error: 'Error al resetear turnos' });
+    res.json({ message: '🧹 Todos los turnos fueron eliminados' });
+  });
+});
+
+
+
+
 
 // Iniciar servidor
 app.listen(PORT, () => console.log(`🚀 Servidor en http://localhost:${PORT}`));

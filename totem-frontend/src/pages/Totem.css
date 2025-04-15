@@ -1,44 +1,69 @@
 .totem-container {
     height: 100vh;
     width: 100%;
-    background: url('/ruta-a-tu-imagen-de-fondo.jpg') no-repeat center center;
+    background: url('/fondo.jpg') no-repeat center center;
     background-size: cover;
-    display: flex;
-    justify-content: center;
     padding-top: 50px;
-}
+  }
   
-.logo {
-    font-size: 2rem;
+  .logo {
+    font-size: 3rem;
     font-weight: bold;
-    color: #007bff;
-}
+    color: #6f42c1;
+  }
   
-.instrucciones {
-    font-size: 1.2rem;
+  .instrucciones {
+    font-size: 1.5rem;
     color: #333;
-}
+    margin-bottom: 20px;
+  }
   
-.btn-totem {
+  .btn-totem {
     width: 80%;
     max-width: 300px;
     margin: 10px;
-    padding: 15px;
-    font-size: 1.5rem;
-    background-color: #00aaff;
+    padding: 20px;
+    font-size: 1.6rem;
+    background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
-}
+    border-radius: 15px;
+    transition: transform 0.2s;
+  }
   
-.btn-totem:hover {
-    background-color: #0088cc;
-}
+  .btn-totem:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
   
-.turno {
-    margin-top: 20px;
-    font-size: 1.8rem;
+  .turno-animado {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 20px 40px;
+    border-radius: 20px;
+    animation: fadeIn 0.6s ease-out;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .turno-numero {
+    font-size: 4rem;
     font-weight: bold;
-    color: #333;
-}
+    color: #28a745;
+  }
+  
+  .error {
+    color: red;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   
